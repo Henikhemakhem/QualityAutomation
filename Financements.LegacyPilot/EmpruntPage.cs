@@ -12,7 +12,8 @@ internal static class EmpruntPage
     public static void OpenList(Window main)
     {
         if (!main.IsEnabled) throw new DesktopBlockedException("Une fenêtre modale bloque la navigation.");
-        // Observed on the installed FIN_ALTEAL application, not inferred from resource IDs.
+        EnsureVisible(main);
+        // Observed on the installed Financements application connected to QA_FIN.
         var tabs = main.FindAllChildren(cf => cf.ByAutomationId("1000").And(cf.ByControlType(ControlType.Tab)));
         if (tabs.Length != 1) throw new DesktopBlockedException("Barre d'onglets de navigation absente ou ambiguë.");
         var items = tabs[0].FindAllChildren(cf => cf.ByName("Liste complète").And(cf.ByControlType(ControlType.TabItem)));
@@ -62,7 +63,7 @@ internal static class EmpruntPage
         var list = ActiveList(main);
         var edits = list.FindAllDescendants(cf => cf.ByControlType(ControlType.Edit))
             .Where(e => e.IsEnabled && !e.IsOffscreen).ToArray();
-        var named = edits.Where(e => Regex.IsMatch(e.Name, "recherche|search", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant)).ToArray();
+        var named = edits.Where(e => Regex.IsMatch(e.Name ?? "", "recherche|search", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant)).ToArray();
         var search = named.Length == 1 ? named[0] : edits.Length == 1 ? edits[0] : null;
         if (search == null)
             throw new DesktopBlockedException("Champ de recherche de Liste complète absent ou ambigu.");
@@ -100,7 +101,14 @@ internal static class EmpruntPage
         {
             cancellation.ThrowIfCancellationRequested();
             if (!main.IsEnabled)
+            {
+                var warnings = main.FindAllDescendants(cf => cf.ByName("Avertissement").And(cf.ByControlType(ControlType.Window)));
+                if (warnings.Length == 1 && warnings[0].FindAllDescendants(cf => cf.ByControlType(ControlType.Text))
+                    .Any(e => (e.Name ?? "").Contains("Cette fiche est déjà en cours d'utilisation.", StringComparison.Ordinal)
+                        && (e.Name ?? "").Contains("Elle ne sera donc ouverte qu'en mode consultation.", StringComparison.Ordinal)))
+                    throw new DesktopBlockedException($"La fiche N°{number} est déjà en cours d'utilisation ; Financements demande une ouverture en consultation.");
                 throw new DesktopBlockedException("Une fenêtre modale bloque la vérification de la fiche emprunt.");
+            }
             var tabs = main.FindAllChildren(cf => cf.ByAutomationId("1000").And(cf.ByControlType(ControlType.Tab)));
             if (tabs.Length == 1)
             {
@@ -115,18 +123,29 @@ internal static class EmpruntPage
 
     private static AutomationElement ActiveList(Window main)
     {
+        EnsureVisible(main);
         if (!main.IsEnabled || !main.Title.EndsWith("[ Liste complète]", StringComparison.Ordinal))
             throw new DesktopBlockedException("Liste complète non active ou fenêtre modale ouverte.");
         var mdi = Unique(main.FindAllChildren(cf => cf.ByAutomationId("59648")), "Espace de travail");
         return Unique(mdi.FindAllChildren(cf => cf.ByControlType(ControlType.Window))
-            .Where(e => e.Name.Trim() == "Liste complète").ToArray(), "Fenêtre Liste complète");
+            .Where(e => e.Name?.Trim() == "Liste complète").ToArray(), "Fenêtre Liste complète");
+    }
+
+    private static void EnsureVisible(Window main)
+    {
+        if (!main.Patterns.Window.IsSupported)
+            throw new DesktopBlockedException("L'état de la fenêtre Financements n'est pas accessible.");
+        var window = main.Patterns.Window.Pattern;
+        if (window.WindowVisualState.Value == WindowVisualState.Minimized)
+            window.SetWindowVisualState(WindowVisualState.Normal);
+        main.Focus();
     }
 
     private static AutomationElement[] ExactNumberCells(AutomationElement list, int number)
     {
         string expected = number.ToString(System.Globalization.CultureInfo.InvariantCulture);
         var headers = list.FindAllDescendants()
-            .Where(e => e.Name.Trim() == "N° fiche" && !e.IsOffscreen).ToArray();
+            .Where(e => e.Name?.Trim() == "N° fiche" && !e.IsOffscreen).ToArray();
         var headerItems = headers.Where(e => e.ControlType == ControlType.HeaderItem).ToArray();
         if (headerItems.Length > 0) headers = headerItems;
         if (headers.Length != 1)
@@ -134,7 +153,7 @@ internal static class EmpruntPage
         var column = headers[0].BoundingRectangle;
         var matches = list.FindAllDescendants()
             .Where(e => e.ControlType is ControlType.Text or ControlType.DataItem or ControlType.Custom
-                && e.Name.Trim() == expected && !e.IsOffscreen)
+                && e.Name?.Trim() == expected && !e.IsOffscreen)
             .Where(e =>
             {
                 var bounds = e.BoundingRectangle;

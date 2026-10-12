@@ -162,8 +162,9 @@ public sealed class DesktopRunner
         catch (Exception ex)
         {
             string status = ex is DesktopBlockedException or OperationCanceledException ? "BLOCKED" : "FAILED";
-            result.Steps.Add(new(name, status, ex.Message, timer.ElapsedMilliseconds));
-            Emit("step", name, status, ex.Message, timer.ElapsedMilliseconds);
+            var message = string.IsNullOrWhiteSpace(ex.Message) ? ex.GetType().Name : ex.Message;
+            result.Steps.Add(new(name, status, message, timer.ElapsedMilliseconds));
+            Emit("step", name, status, message, timer.ElapsedMilliseconds);
             throw;
         }
     }
@@ -171,7 +172,7 @@ public sealed class DesktopRunner
     private void FinishError(DesktopResult result, string output, string status, string message)
     {
         result.Status = status;
-        result.Errors.Add(message);
+        result.Errors.Add(string.IsNullOrWhiteSpace(message) ? "Erreur du pilote sans message détaillé." : message);
         try { result.Screenshots.Add(Path.GetFileName(ScreenshotService.Capture(output))); }
         catch (Exception ex) { Emit("information", "capture", "FAILED", ex.Message, 0); }
     }

@@ -62,7 +62,9 @@ Token local protégé par ACL utilisateur ; loopback et origine exacte ; fichier
 
 `EmpruntPage.SearchByNumber` saisit le numéro demandé dans le champ de recherche visible de Liste complète et n'accepte qu'une ligne unique sous l'en-tête `N° fiche`. `OpenEmprunt` double-clique cette ligne ; `VerifyOpened` attend le même numéro dans le titre de la fenêtre et dans l'onglet sélectionné. Les trois étapes remontent leurs statuts dans le rapport et l'historique API. Une ligne ou un contrôle absent ou ambigu produit `BLOCKED` sans double-clic sur une autre fiche.
 
-Compilation `Financements.QualityApi.csproj` avec sa référence directe à `Financements.LegacyPilot` : succès, 0 avertissement, 0 erreur. Le test HTTP `test-api.ps1` n'a pas pu lire `.local/api-token.txt` depuis cette session (ACL Windows) ; aucun résultat HTTP nouveau n'est revendiqué. L'application Financements n'était plus ouverte lors de cette validation : le double-clic sur une fiche QA_FIN reste à vérifier en session connectée.
+Compilation `Financements.QualityApi.csproj` avec sa référence directe à `Financements.LegacyPilot` : succès, 0 avertissement, 0 erreur.
+
+Essai réel ultérieur `95475436-c714-4c8f-85a1-4e334c698a39` avec la valeur **4** du champ « Identifiant de l’emprunt » : catalogue SQL physique QA_FIN confirmé ; `rechercher_emprunt` et `ouvrir_fiche` ont réussi. La cellule `4` sous `N° fiche` a été double-cliquée, et Financements a affiché l'avertissement « Cette fiche est déjà en cours d'utilisation. Elle ne sera donc ouverte qu'en mode consultation. » La vérification finale est donc `BLOCKED`, sans revendication d'une fiche ouverte. Un essai séparé de validation de cet avertissement a été suivi de la fermeture de Financements ; le pilote ne valide plus automatiquement ce dialogue. Le redémarrage laisse Financements sur Login, où l'opérateur peut se reconnecter à QA_FIN. L'API a été reconstruite et redémarrée ; `test-api.ps1 -RunId 95475436-c714-4c8f-85a1-4e334c698a39` passe (401, 403, catalogue, rapport, logs, SSE, captures).
 
 ## Phase 7 — Opérations préparées
 
