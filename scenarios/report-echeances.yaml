@@ -1,0 +1,9 @@
+nom: Report d'échéances
+description: Parcours CEpOpReportEchDlg à valider
+application: Financements
+base_sql: QA_FIN
+emprunt: 2261
+etapes:
+  - ouvrir_emprunt
+  - report_echeances
+  - sauvegarder

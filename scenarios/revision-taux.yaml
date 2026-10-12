@@ -1,0 +1,11 @@
+nom: Révision de taux
+description: Réviser le taux fixe puis sauvegarder sur QA_FIN uniquement
+application: Financements
+emprunt: 2261
+base_sql: QA_FIN
+etapes:
+  - ouvrir_emprunt
+  - revision_taux:
+      date: "2027-01-15"
+      nouveau_taux: 3.25
+  - sauvegarder

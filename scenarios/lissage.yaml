@@ -1,0 +1,9 @@
+nom: Lissage des échéances
+description: Parcours CEpOpLissageDlg à valider
+application: Financements
+base_sql: QA_FIN
+emprunt: 2261
+etapes:
+  - ouvrir_emprunt
+  - lissage
+  - sauvegarder

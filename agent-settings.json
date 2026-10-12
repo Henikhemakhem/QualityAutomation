@@ -1,0 +1,9 @@
+{
+  "executablePath": "C:\\Program Files (x86)\\Salvia\\Financements\\Financements.exe",
+  "sqlServer": "localhost\\SQLEXPRESS",
+  "targetDatabase": "QA_FIN",
+  "financementsConnectionLabel": "QA_FIN",
+  "windowTimeoutSeconds": 30,
+  "runTimeoutSeconds": 90,
+  "automationBackend": "UIA2"
+}

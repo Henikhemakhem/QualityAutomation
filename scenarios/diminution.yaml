@@ -1,0 +1,9 @@
+nom: Diminution partielle d'un emprunt
+description: Parcours mouvement MODE_DIMIN à mesurer sur QA_FIN
+application: Financements
+base_sql: QA_FIN
+emprunt: 2261
+etapes:
+  - ouvrir_emprunt
+  - diminution
+  - sauvegarder

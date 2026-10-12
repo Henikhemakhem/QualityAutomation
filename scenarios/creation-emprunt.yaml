@@ -1,0 +1,8 @@
+nom: Création d'un emprunt
+description: Création non encore automatisée ni testée
+application: Financements
+base_sql: QA_FIN
+emprunt: 2261
+etapes:
+  - creer_emprunt
+  - sauvegarder

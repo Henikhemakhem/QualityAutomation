@@ -1,0 +1,10 @@
+nom: Remboursement anticipé total
+description: Préparation du parcours CEpOpMouvDlg, non validé
+application: Financements
+base_sql: QA_FIN
+emprunt: 2261
+etapes:
+  - ouvrir_emprunt
+  - remboursement_anticipe:
+      type: total
+  - sauvegarder

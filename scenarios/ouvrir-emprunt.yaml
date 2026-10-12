@@ -1,0 +1,13 @@
+nom: Ouvrir un emprunt
+description: Rechercher et afficher la fiche d'un emprunt dans l'interface Windows réelle
+application: Financements
+emprunt: 2261
+operation: Navigation en lecture seule
+base_sql: QA_FIN
+etapes:
+  - lancer_financements
+  - verifier_connexion
+  - ouvrir_gestion_emprunts
+  - rechercher_emprunt
+  - ouvrir_fiche
+  - verifier_fiche_ouverte

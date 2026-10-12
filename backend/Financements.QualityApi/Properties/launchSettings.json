@@ -1,0 +1,12 @@
+{
+  "profiles": {
+    "Financements.QualityApi": {
+      "commandName": "Project",
+      "launchBrowser": true,
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      },
+      "applicationUrl": "https://localhost:51407;http://localhost:51408"
+    }
+  }
+}

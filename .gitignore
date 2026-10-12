@@ -1,0 +1,7 @@
+results/*
+!results/.gitkeep
+.local/
+**/bin/
+**/obj/
+frontend/node_modules/
+frontend/dist/
